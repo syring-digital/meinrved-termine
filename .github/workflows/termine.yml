@@ -1,0 +1,36 @@
+# Kalenderabo der WSGE-Termine: liest wsge.de, schreibt termine.ics und veröffentlicht sie über GitHub Pages.
+# Läuft mehrmals täglich; fällt wsge.de aus, bleibt die zuletzt veröffentlichte Datei erhalten.
+name: Termine aktualisieren
+on:
+  schedule:
+    - cron: '20 4,10,16 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: termine
+  cancel-in-progress: false
+jobs:
+  veroeffentlichen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python termine_ics.py site/termine.ics
+      - run: cp index.html site/index.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v4
