@@ -12,9 +12,15 @@ Spiegel-Repository: `syring-digital/meinrved-termine`, übertragen mit `veroeffe
 in zwei Stufen: `profil` (nur das Seglerprofil ist privat) und `anonym` (überall „Segler/in anonymisiert“).
 Die Liste enthält nur SHA-256-Werte, keine Namen.
 
+Am einfachsten geht das im Browser: https://meinrved.syring-digital.de/verwaltung/ (Quelle `verwaltung/index.html`, braucht einen
+GitHub-Zugangsschlüssel mit „Contents: Read and write“ für dieses Repo). Oder im Terminal; jeder Befehl holt zuerst den Stand von GitHub,
+„hinzufuegen“ und „entfernen“ veröffentlichen sofort:
+
     python3 sperrliste.py hinzufuegen --stufe anonym "Vorname Nachname" --sl <WSGE-Nummer> --variante "andere Schreibweise"
     python3 sperrliste.py hinzufuegen --stufe profil "Vorname Nachname" --sl <WSGE-Nummer>
     python3 sperrliste.py entfernen "Vorname Nachname" --sl <WSGE-Nummer>
-    sh veroeffentlichen.sh "Sperrliste aktualisiert"
+    python3 sperrliste.py holen      # vor jedem App-Build: Stand von GitHub ins App-Paket übernehmen
+
+`veroeffentlichen.sh` holt die Sperrliste ebenfalls zuerst von GitHub, damit Änderungen aus dem Browser nicht überschrieben werden.
 
 Das Skript schreibt auch `MeinRVED/sperrliste.json` (im App-Paket). Schlüssel und Hash müssen mit `MeinRVED/Sperrliste.swift` übereinstimmen.

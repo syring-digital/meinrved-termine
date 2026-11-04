@@ -13,9 +13,11 @@ MeinRVED/sperrliste.json (im App-Paket, wirkt auch ohne Netz).
   python3 sperrliste.py entfernen "Oliver Syring" [--sl 123]   # Widerspruch zurückgenommen
   python3 sperrliste.py pruefen "Syring, Oliver" [--sl 123]   # Stufe anzeigen
   python3 sperrliste.py schluessel "Dr. Oliver Süring"         # Schlüssel und Hash (zum Abgleich mit der App)
+  python3 sperrliste.py holen                                 # Stand von GitHub holen (vor jedem App-Build)
 
-Ein neuer Eintrag ersetzt eine andere Stufe derselben Person. Danach veröffentlichen:
-  sh Tools/Termine/veroeffentlichen.sh "Sperrliste aktualisiert"
+Ein neuer Eintrag ersetzt eine andere Stufe derselben Person. Maßgeblich ist immer die Fassung auf GitHub
+(sie kann auch über die Webseite meinrved.syring-digital.de/verwaltung/ geändert werden): Jeder Befehl holt sie zuerst,
+„hinzufuegen“ und „entfernen“ veröffentlichen die Änderung sofort (Commit ohne Namen, Push nach main).
 
 Namen der Widersprechenden NICHT in dieses Repository schreiben (es ist öffentlich). Den Widerspruch selbst
 (wer, wann, welche Stufe, welche Schreibweisen) nur im E-Mail-Postfach aufbewahren.
@@ -25,11 +27,45 @@ import datetime
 import hashlib
 import json
 import pathlib
+import shutil
+import subprocess
 import unicodedata
 
 HIER = pathlib.Path(__file__).resolve().parent
 ZIELE = [HIER / "sperrliste.json", HIER.parent.parent / "MeinRVED" / "sperrliste.json"]
 TITEL = {"dr", "prof", "dipl", "ing"}
+SPIEGEL = pathlib.Path.home() / "Library" / "Application Support" / "MeinRVED-Termine" / "repo"
+REPO_URL = "https://github.com/syring-digital/meinrved-termine.git"
+
+
+def git(*args: str) -> None:
+    subprocess.run(["git", "-C", str(SPIEGEL), *args], check=True)
+
+
+def holen() -> None:
+    """Holt die Sperrliste von GitHub (Spiegel-Klon wie in veroeffentlichen.sh) und schreibt sie in beide Dateien."""
+    if not (SPIEGEL / ".git").exists():
+        SPIEGEL.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run(["git", "clone", "-q", REPO_URL, str(SPIEGEL)], check=True)
+        git("config", "user.name", "Jakob Syring")
+        git("config", "user.email", "345268148+syring-digital@users.noreply.github.com")
+    git("pull", "-q", "--ff-only", "origin", "main")
+    quelle = SPIEGEL / "sperrliste.json"
+    if quelle.exists():
+        for p in ZIELE:
+            shutil.copyfile(quelle, p)
+
+
+def veroeffentlichen(nachricht: str) -> None:
+    """Überträgt die geänderte Liste sofort nach GitHub (nur diese Datei)."""
+    shutil.copyfile(ZIELE[0], SPIEGEL / "sperrliste.json")
+    git("add", "sperrliste.json")
+    if subprocess.run(["git", "-C", str(SPIEGEL), "diff", "--cached", "--quiet"]).returncode == 0:
+        print("Keine Änderung zu veröffentlichen.")
+        return
+    git("commit", "-q", "-m", nachricht)
+    git("push", "-q", "origin", "HEAD:main")
+    print("Veröffentlicht. Online nach etwa einer Minute, in den Apps spätestens nach sechs Stunden.")
 
 
 def schluessel(name: str) -> str:
@@ -66,13 +102,13 @@ STUFEN = ("anonym", "profil")
 
 
 def laden() -> dict:
-    """Stand der Liste; beide Dateien werden zusammengeführt (falls eine von Hand geändert wurde)."""
+    """Aktueller Stand von GitHub."""
+    holen()
     liste = {k: set() for k in STUFEN}
-    for p in ZIELE:
-        if p.exists():
-            daten = json.loads(p.read_text(encoding="utf-8"))
-            for k in STUFEN:
-                liste[k] |= set(daten.get(k, []))
+    if ZIELE[0].exists():
+        daten = json.loads(ZIELE[0].read_text(encoding="utf-8"))
+        for k in STUFEN:
+            liste[k] |= set(daten.get(k, []))
     liste["profil"] -= liste["anonym"]
     return liste
 
@@ -112,7 +148,13 @@ def main() -> None:
     p.add_argument("--sl", type=int, action="append", default=[])
     s = sub.add_parser("schluessel")
     s.add_argument("name")
+    sub.add_parser("holen")
     a = ap.parse_args()
+
+    if a.befehl == "holen":
+        holen()
+        print("Sperrliste von GitHub übernommen (Tools/Termine und MeinRVED).")
+        return
 
     if a.befehl == "schluessel":
         print(schluessel(a.name), hash_name(a.name))
@@ -129,7 +171,7 @@ def main() -> None:
             liste[k] -= w
         speichern(liste)
         print(f"{vorher - sum(len(liste[k]) for k in STUFEN)} Einträge entfernt.")
-        print("Im App-Paket bleibt der Eintrag bis zum nächsten Update, falls er dort schon enthalten war.")
+        veroeffentlichen("Sperrliste: Eintrag entfernt")
     else:
         w = werte(a)
         andere = "profil" if a.stufe == "anonym" else "anonym"
@@ -138,7 +180,7 @@ def main() -> None:
         liste[a.stufe] |= w
         speichern(liste)
         print(f"{len(neu)} neue Einträge in Stufe {a.stufe}.")
-        print('Danach: sh Tools/Termine/veroeffentlichen.sh "Sperrliste aktualisiert"')
+        veroeffentlichen(f"Sperrliste: Eintrag ({a.stufe})")
         if a.stufe == "anonym":
             print("Mit dem nächsten App-Update die Seed-Dateien (MeinRVED/Seed) und das Quellen-Archiv bereinigen.")
 

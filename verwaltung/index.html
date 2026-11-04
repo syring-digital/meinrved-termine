@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self'; connect-src https://api.github.com https://syring-digital.github.io; base-uri 'none'; form-action 'none'">
+<meta name="color-scheme" content="light dark">
+<title>Sperrliste verwalten – Mein RVED</title>
+<link rel="icon" href="../icon.png">
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--text:#1c1f24;--muted:#5c6470;--accent:#0b4f8a;--line:#dde2e8;--ok:#1f7a4d;--okbg:#e9f6ef;--warn:#9a5200;--warnbg:#fdf3e6;--err:#b3261e;--errbg:#fdecea;--field:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1420;--card:#172030;--text:#e9edf2;--muted:#9aa6b4;--accent:#78bdf2;--line:#2a3343;--ok:#6fd3a0;--okbg:#12291f;--warn:#f0b062;--warnbg:#2c2112;--err:#ff8a80;--errbg:#2f1614;--field:#0f1724}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+header{background:#0b4f8a;color:#fff}
+header .in,main{max-width:720px;margin:0 auto;padding:0 16px}
+header .in{display:flex;align-items:center;gap:12px;padding-top:14px;padding-bottom:14px}
+header img{width:36px;height:36px;border-radius:8px}
+header b{font-size:18px}
+main{padding-top:20px;padding-bottom:48px}
+h1{font-size:26px;margin:0 0 4px}
+.lead{color:var(--muted);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:0 0 16px}
+.card h2{font-size:18px;margin:0 0 12px}
+label{display:block;font-weight:600;font-size:14px;margin:12px 0 4px}
+label .opt{font-weight:400;color:var(--muted)}
+input[type=text],input[type=password],textarea{width:100%;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--field);color:var(--text)}
+textarea{min-height:64px;resize:vertical}
+input:focus,textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+button{font:inherit;font-weight:600;border:0;border-radius:10px;padding:10px 16px;cursor:pointer;background:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button{color:#0b1a2b}}
+button.sec{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+button.del{background:transparent;color:var(--err);border:1px solid var(--err)}
+button:disabled{opacity:.45;cursor:default}
+.check{display:flex;gap:8px;align-items:center;font-weight:400;margin-top:10px}
+.stufen{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.stufe{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;gap:10px;align-items:flex-start;cursor:pointer;font-weight:400;margin:0}
+.stufe input{margin-top:4px}
+.stufe b{display:block}
+.stufe small{color:var(--muted)}
+.stufe:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.key{font:13px ui-monospace,Menlo,monospace;color:var(--muted);margin-top:6px;word-break:break-word}
+.status{font-size:14px;color:var(--muted);margin-top:10px}
+.msg{border-radius:10px;padding:12px 14px;margin-top:14px;font-size:15px}
+.msg.ok{background:var(--okbg);color:var(--ok)}
+.msg.warn{background:var(--warnbg);color:var(--warn)}
+.msg.err{background:var(--errbg);color:var(--err)}
+.msg.info{background:var(--bg);color:var(--text)}
+details{margin-top:4px}
+summary{cursor:pointer;font-weight:600}
+details ol,details ul{padding-left:20px}
+code{font:13px ui-monospace,Menlo,monospace;background:var(--bg);padding:1px 5px;border-radius:5px}
+.hidden{display:none}
+@media (max-width:520px){.stufen{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="in"><img src="../icon.png" alt=""><b>Mein RVED · Sperrliste</b></div></header>
+<main>
+<h1>Sperrliste verwalten</h1>
+<p class="lead">Widersprüche von Seglerinnen und Seglern gegen die Darstellung in der App (Art. 21 DSGVO). Namen verlassen diesen Browser nicht: Gespeichert und veröffentlicht werden nur Prüfwerte (SHA-256).</p>
+
+<section class="card" id="zugang">
+  <h2>1. Anmelden</h2>
+  <label for="token">GitHub-Zugangsschlüssel <span class="opt">(nur für „Eintragen“ und „Entfernen“)</span></label>
+  <input type="password" id="token" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
+  <label class="check"><input type="checkbox" id="merken"> Auf diesem Gerät merken</label>
+  <div class="row">
+    <button id="verbinden">Verbinden</button>
+    <button class="sec hidden" id="abmelden">Abmelden</button>
+  </div>
+  <div class="status" id="zugangStatus">Nicht angemeldet. „Prüfen“ funktioniert auch ohne Anmeldung.</div>
+</section>
+
+<section class="card">
+  <h2>2. Person</h2>
+  <label for="name">Name, wie er in den Ergebnissen steht</label>
+  <input type="text" id="name" autocomplete="off" placeholder="z. B. Oliver Syring">
+  <label for="sl">WSGE-Seglernummer <span class="opt">(optional, empfohlen; Zahl hinter <code>/segler/?sl=</code>, mehrere mit Komma)</span></label>
+  <input type="text" id="sl" inputmode="numeric" autocomplete="off" placeholder="z. B. 123">
+  <label for="varianten">Weitere Schreibweisen <span class="opt">(optional, eine pro Zeile)</span></label>
+  <textarea id="varianten" placeholder="z. B. Oliver Süring"></textarea>
+  <div class="key" id="vorschau"></div>
+
+  <label>Stufe</label>
+  <div class="stufen">
+    <label class="stufe"><input type="radio" name="stufe" value="anonym" checked><span><b>Vollständig anonym</b><small>Überall „Segler/in anonymisiert“, ohne Verein, ohne Profil und Suchtreffer.</small></span></label>
+    <label class="stufe"><input type="radio" name="stufe" value="profil"><span><b>Nur Profil privat</b><small>Name und Platzierungen bleiben in den Ergebnissen, das Profil zeigt nur einen Hinweis.</small></span></label>
+  </div>
+
+  <div class="row">
+    <button class="sec" id="pruefen">Prüfen</button>
+    <button id="eintragen" disabled>Eintragen</button>
+    <button class="del" id="entfernen" disabled>Entfernen</button>
+  </div>
+  <div id="meldung"></div>
+</section>
+
+<section class="card">
+  <details>
+    <summary>Hilfe: Zugangsschlüssel anlegen und Ablauf</summary>
+    <p><b>Zugangsschlüssel einmalig anlegen</b> (bei GitHub angemeldet als <code>syring-digital</code>):</p>
+    <ol>
+      <li>Auf github.com: Settings › Developer settings › Personal access tokens › <b>Fine-grained tokens</b> › Generate new token.</li>
+      <li>Name z. B. „Sperrliste Mein RVED“, Ablauf höchstens ein Jahr.</li>
+      <li>Repository access: <b>Only select repositories</b> › <code>syring-digital/meinrved-termine</code>.</li>
+      <li>Permissions › Repository permissions › <b>Contents: Read and write</b>. Sonst nichts.</li>
+      <li>Schlüssel kopieren und oben einfügen. Er darf nur diese eine Liste ändern, sonst nichts.</li>
+    </ol>
+    <p><b>Was beim Speichern passiert:</b> Die Seite liest <code>sperrliste.json</code> aus dem Repository, ändert sie und speichert sie mit einem neutralen Commit-Text ohne Namen. GitHub veröffentlicht die Liste nach etwa einer Minute. Die Apps übernehmen sie beim nächsten Start, spätestens nach sechs Stunden, ohne Update.</p>
+    <p><b>Bei „Vollständig anonym“ zusätzlich:</b> mit dem nächsten App-Update die mitgelieferten WSGE-Sicherungen (<code>MeinRVED/Seed</code>) und das Quellen-Archiv bereinigen. Vor dem App-Build <code>python3 Tools/Termine/sperrliste.py holen</code> ausführen, damit die Liste im App-Paket aktuell ist.</p>
+    <p><b>Frist und Nachweis:</b> spätestens einen Monat nach Eingang umsetzen. Die E-Mail mit dem Widerspruch im Postfach aufbewahren, solange er gilt. Namen nicht in Dateien oder Commit-Texte schreiben.</p>
+    <p><b>Gleiche Regeln wie in der App:</b> Reihenfolge, Groß- und Kleinschreibung, Umlaute, Bindestriche und Titel („Dr.“) spielen keine Rolle. „Syring, Oliver“ und „Dr. Oliver Syring“ ergeben denselben Prüfwert. Abweichende Schreibweisen („Süring“) als weitere Schreibweise eintragen.</p>
+  </details>
+</section>
+</main>
+
+<script>
+"use strict";
+const REPO = "syring-digital/meinrved-termine";
+const DATEI = "sperrliste.json";
+const API = `https://api.github.com/repos/${REPO}/contents/${DATEI}`;
+const PAGES = "https://syring-digital.github.io/meinrved-termine/sperrliste.json";
+const HINWEIS = "Widersprüche nach Art. 21 DSGVO gegen die Darstellung in Mein RVED. Nur SHA-256-Werte, keine Namen. anonym = überall anonymisiert, profil = nur das Seglerprofil ist privat.";
+const TITEL = new Set(["dr", "prof", "dipl", "ing"]);
+const SPEICHER = "meinrved.sperrliste.token";
+
+const $ = id => document.getElementById(id);
+let token = "";
+let verbunden = null;   // {sha, liste}
+
+// ---------- Schlüssel und Prüfwerte (identisch zu Sperrliste.swift und sperrliste.py)
+
+function schluessel(name) {
+  const s = name.replace(/ß/g, "ss").replace(/ẞ/g, "ss").normalize("NFKD").replace(/\p{M}/gu, "").toLowerCase();
+  const tokens = s.split(/[^\p{L}]+/u).filter(t => t && !TITEL.has(t));
+  return tokens.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0)).join(" ");
+}
+
+async function sha256(text) {
+  const daten = new TextEncoder().encode(text);
+  if (globalThis.crypto && crypto.subtle) {
+    const buf = await crypto.subtle.digest("SHA-256", daten);
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+  }
+  return sha256Ersatz(daten);   // z. B. wenn die Seite als lokale Datei ohne sicheren Kontext geöffnet wird
+}
+
+/** SHA-256 nach FIPS 180-4, nur als Ersatz, falls crypto.subtle fehlt. */
+function sha256Ersatz(bytes) {
+  const K = new Uint32Array([0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2]);
+  const H = new Uint32Array([0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19]);
+  const laenge = bytes.length, bloecke = Math.ceil((laenge + 9) / 64);
+  const m = new Uint8Array(bloecke * 64); m.set(bytes); m[laenge] = 0x80;
+  const dv = new DataView(m.buffer); dv.setUint32(m.length - 4, laenge * 8); dv.setUint32(m.length - 8, Math.floor(laenge / 0x20000000));
+  const w = new Uint32Array(64), rot = (x, n) => (x >>> n) | (x << (32 - n));
+  for (let b = 0; b < bloecke; b++) {
+    for (let i = 0; i < 16; i++) w[i] = dv.getUint32(b * 64 + i * 4);
+    for (let i = 16; i < 64; i++) {
+      const s0 = rot(w[i-15], 7) ^ rot(w[i-15], 18) ^ (w[i-15] >>> 3), s1 = rot(w[i-2], 17) ^ rot(w[i-2], 19) ^ (w[i-2] >>> 10);
+      w[i] = (w[i-16] + s0 + w[i-7] + s1) >>> 0;
+    }
+    let [a, b2, c, d, e, f, g, h] = H;
+    for (let i = 0; i < 64; i++) {
+      const t1 = (h + (rot(e, 6) ^ rot(e, 11) ^ rot(e, 25)) + ((e & f) ^ (~e & g)) + K[i] + w[i]) >>> 0;
+      const t2 = ((rot(a, 2) ^ rot(a, 13) ^ rot(a, 22)) + ((a & b2) ^ (a & c) ^ (b2 & c))) >>> 0;
+      h = g; g = f; f = e; e = (d + t1) >>> 0; d = c; c = b2; b2 = a; a = (t1 + t2) >>> 0;
+    }
+    H[0] += a; H[1] += b2; H[2] += c; H[3] += d; H[4] += e; H[5] += f; H[6] += g; H[7] += h;
+  }
+  return [...H].map(x => x.toString(16).padStart(8, "0")).join("");
+}
+
+function eingaben() {
+  const namen = [$("name").value, ...$("varianten").value.split("\n")].map(n => n.trim()).filter(Boolean);
+  const nummern = $("sl").value.split(/[,\s;]+/).map(n => n.trim()).filter(Boolean);
+  const falsch = nummern.filter(n => !/^\d+$/.test(n));
+  return { namen, nummern: nummern.filter(n => /^\d+$/.test(n)).map(n => String(parseInt(n, 10))), falsch };
+}
+
+async function pruefwerte() {
+  const { namen, nummern, falsch } = eingaben();
+  if (!namen.length) throw new Error("Bitte einen Namen eingeben.");
+  if (falsch.length) throw new Error(`Keine gültige Seglernummer: ${falsch.join(", ")}`);
+  const leer = namen.filter(n => !schluessel(n));
+  if (leer.length) throw new Error(`Kein gültiger Name: ${leer.join(", ")}`);
+  const werte = new Set();
+  for (const n of namen) werte.add(await sha256("meinrved:name:" + schluessel(n)));
+  for (const n of nummern) werte.add(await sha256("meinrved:sl:" + n));
+  return werte;
+}
+
+function vorschau() {
+  const { namen, nummern } = eingaben();
+  const keys = [...new Set(namen.map(schluessel).filter(Boolean))];
+  $("vorschau").textContent = keys.length || nummern.length
+    ? "Abgleich über: " + [...keys.map(k => `„${k}“`), ...nummern.map(n => `Nr. ${n}`)].join(" · ")
+    : "";
+}
+
+// ---------- Liste lesen und schreiben
+
+function normal(liste) {
+  const anonym = new Set((liste.anonym || []).map(s => s.toLowerCase()));
+  const profil = new Set((liste.profil || []).map(s => s.toLowerCase()).filter(s => !anonym.has(s)));
+  return { anonym, profil };
+}
+
+function heute() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+/** Gleiche Form wie sperrliste.py (json.dumps mit indent=2, ensure_ascii=False, Zeilenumbruch am Ende). */
+function alsText({ anonym, profil }) {
+  const daten = { hinweis: HINWEIS, stand: heute(), anonym: [...anonym].sort(), profil: [...profil].filter(s => !anonym.has(s)).sort() };
+  return JSON.stringify(daten, null, 2) + "\n";
+}
+
+function b64ZuText(b64) {
+  const bin = atob(b64.replace(/\s/g, ""));
+  return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0)));
+}
+function textZuB64(text) {
+  const bytes = new TextEncoder().encode(text);
+  let bin = ""; for (const b of bytes) bin += String.fromCharCode(b);
+  return btoa(bin);
+}
+
+function kopf() {
+  return { "Authorization": `Bearer ${token}`, "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" };
+}
+
+async function laden() {
+  const r = await fetch(`${API}?ref=main&t=${Date.now()}`, { headers: kopf(), cache: "no-store" });
+  if (r.status === 401) throw new Error("Der Zugangsschlüssel ist ungültig oder abgelaufen.");
+  if (r.status === 403 || r.status === 404) throw new Error("Kein Zugriff auf das Repository. Hat der Schlüssel „Contents: Read and write“ für meinrved-termine?");
+  if (!r.ok) throw new Error(`GitHub antwortet mit Status ${r.status}.`);
+  const j = await r.json();
+  return { sha: j.sha, liste: normal(JSON.parse(b64ZuText(j.content))) };
+}
+
+async function ladenOhneAnmeldung() {
+  const r = await fetch(`${PAGES}?t=${Date.now()}`, { cache: "no-store" });
+  if (!r.ok) throw new Error(`Die veröffentlichte Liste ist nicht erreichbar (Status ${r.status}).`);
+  return normal(await r.json());
+}
+
+/** Ändert die Liste mit `aendern` und speichert sie. Hat jemand anderes inzwischen gespeichert, wird neu geladen und die Änderung wiederholt. */
+async function speichern(aendern, nachricht) {
+  for (let versuch = 0; versuch < 3; versuch++) {
+    const aktuell = await laden();
+    const vorher = alsText(aktuell.liste);
+    const neu = { anonym: new Set(aktuell.liste.anonym), profil: new Set(aktuell.liste.profil) };
+    aendern(neu);
+    const text = alsText(neu);
+    if (text === vorher) return { geaendert: false, liste: neu };
+    const r = await fetch(API, {
+      method: "PUT", headers: { ...kopf(), "Content-Type": "application/json" },
+      body: JSON.stringify({ message: nachricht, content: textZuB64(text), sha: aktuell.sha, branch: "main" })
+    });
+    if (r.status === 409 || r.status === 422) continue;   // zwischenzeitlich geändert
+    if (r.status === 401) throw new Error("Der Zugangsschlüssel ist ungültig oder abgelaufen.");
+    if (r.status === 403 || r.status === 404) throw new Error("Keine Schreibrechte. Der Schlüssel braucht „Contents: Read and write“ für meinrved-termine.");
+    if (!r.ok) throw new Error(`Speichern fehlgeschlagen (Status ${r.status}).`);
+    const j = await r.json();
+    verbunden = { sha: j.content.sha, liste: neu };
+    zeigeZugang();
+    return { geaendert: true, liste: neu };
+  }
+  throw new Error("Die Liste wurde gleichzeitig geändert. Bitte noch einmal versuchen.");
+}
+
+/** Wartet, bis GitHub Pages den neuen Stand ausliefert. */
+async function warteAufVeroeffentlichung(pruefe, el) {
+  for (let i = 0; i < 36; i++) {
+    await new Promise(r => setTimeout(r, 5000));
+    try {
+      const online = await ladenOhneAnmeldung();
+      if (pruefe(online)) {
+        el.className = "msg ok";
+        el.innerHTML += "<br><b>Online.</b> Die Apps übernehmen die Änderung beim nächsten Start, spätestens nach sechs Stunden.";
+        return;
+      }
+    } catch (e) { /* weiter warten */ }
+  }
+  el.className = "msg warn";
+  el.innerHTML += "<br>Die Veröffentlichung dauert ungewöhnlich lange. Gespeichert ist die Änderung trotzdem; bitte später mit „Prüfen“ kontrollieren.";
+}
+
+// ---------- Oberfläche
+
+function stufeVon(liste, werte) {
+  if ([...werte].some(w => liste.anonym.has(w))) return "anonym";
+  if ([...werte].some(w => liste.profil.has(w))) return "profil";
+  return "keine";
+}
+const STUFENTEXT = { anonym: "vollständig anonym", profil: "nur Profil privat", keine: "nicht auf der Liste" };
+
+function meldung(text, art = "info") {
+  const el = document.createElement("div");
+  el.className = `msg ${art}`;
+  el.innerHTML = text;
+  $("meldung").replaceChildren(el);
+  return el;
+}
+const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+function anzeigeName() { return esc($("name").value.trim()); }
+
+function zeigeZugang() {
+  const an = !!verbunden;
+  $("eintragen").disabled = !an; $("entfernen").disabled = !an;
+  $("abmelden").classList.toggle("hidden", !an && !token);
+  $("zugangStatus").textContent = an
+    ? `Angemeldet. Auf der Liste: ${verbunden.liste.anonym.size} Prüfwerte „anonym“, ${verbunden.liste.profil.size} „Profil privat“.`
+    : "Nicht angemeldet. „Prüfen“ funktioniert auch ohne Anmeldung.";
+}
+
+async function beschaeftigt(knopf, arbeit) {
+  const alle = ["verbinden", "pruefen", "eintragen", "entfernen"].map($);
+  const vorher = alle.map(b => b.disabled);
+  alle.forEach(b => (b.disabled = true));
+  const text = knopf.textContent; knopf.textContent = "Bitte warten …";
+  try { await arbeit(); }
+  catch (e) { meldung(esc(e.message || String(e)), "err"); }
+  finally { knopf.textContent = text; alle.forEach((b, i) => (b.disabled = vorher[i])); zeigeZugang(); }
+}
+
+$("verbinden").addEventListener("click", () => beschaeftigt($("verbinden"), async () => {
+  token = $("token").value.trim();
+  if (!token) throw new Error("Bitte den Zugangsschlüssel einfügen.");
+  verbunden = await laden();
+  try { if ($("merken").checked) localStorage.setItem(SPEICHER, token); else localStorage.removeItem(SPEICHER); } catch (e) {}
+  meldung("Verbunden. Die Liste kann jetzt geändert werden.", "ok");
+}));
+
+$("abmelden").addEventListener("click", () => {
+  token = ""; verbunden = null; $("token").value = ""; $("merken").checked = false;
+  try { localStorage.removeItem(SPEICHER); } catch (e) {}
+  zeigeZugang(); meldung("Abgemeldet. Der Schlüssel ist von diesem Gerät entfernt.", "info");
+});
+
+$("pruefen").addEventListener("click", () => beschaeftigt($("pruefen"), async () => {
+  const werte = await pruefwerte();
+  const liste = verbunden ? (await laden()).liste : await ladenOhneAnmeldung();
+  const stufe = stufeVon(liste, werte);
+  meldung(`<b>${anzeigeName()}</b>: ${STUFENTEXT[stufe]}.`, stufe === "keine" ? "info" : "ok");
+}));
+
+$("eintragen").addEventListener("click", () => beschaeftigt($("eintragen"), async () => {
+  const werte = await pruefwerte();
+  const stufe = document.querySelector("input[name=stufe]:checked").value;
+  const andere = stufe === "anonym" ? "profil" : "anonym";
+  const { geaendert } = await speichern(l => { werte.forEach(w => { l[andere].delete(w); l[stufe].add(w); }); },
+                                        `Sperrliste: Eintrag (${stufe})`);
+  if (!geaendert) { meldung(`<b>${anzeigeName()}</b> steht bereits mit Stufe „${STUFENTEXT[stufe]}“ auf der Liste.`, "info"); return; }
+  const el = meldung(`Gespeichert: <b>${anzeigeName()}</b> – ${STUFENTEXT[stufe]}. Wird veröffentlicht …` +
+    (stufe === "anonym" ? "<br>Mit dem nächsten App-Update außerdem die WSGE-Sicherungen in der App und das Quellen-Archiv bereinigen." : ""), "info");
+  await warteAufVeroeffentlichung(o => [...werte].every(w => o[stufe].has(w)), el);
+}));
+
+$("entfernen").addEventListener("click", () => beschaeftigt($("entfernen"), async () => {
+  const werte = await pruefwerte();
+  if (!confirm(`Widerspruch für „${$("name").value.trim()}“ zurücknehmen? Die Person erscheint danach wieder normal in der App.`)) return;
+  const { geaendert } = await speichern(l => { werte.forEach(w => { l.anonym.delete(w); l.profil.delete(w); }); },
+                                        "Sperrliste: Eintrag entfernt");
+  if (!geaendert) { meldung(`<b>${anzeigeName()}</b> stand nicht auf der Liste.`, "info"); return; }
+  const el = meldung(`Entfernt: <b>${anzeigeName()}</b>. Wird veröffentlicht …`, "info");
+  await warteAufVeroeffentlichung(o => [...werte].every(w => !o.anonym.has(w) && !o.profil.has(w)), el);
+}));
+
+["name", "sl", "varianten"].forEach(id => $(id).addEventListener("input", vorschau));
+
+try {
+  const gemerkt = localStorage.getItem(SPEICHER);
+  if (gemerkt) { $("token").value = gemerkt; $("merken").checked = true; $("verbinden").click(); }
+} catch (e) {}
+zeigeZugang();
+</script>
+</body>
+</html>
