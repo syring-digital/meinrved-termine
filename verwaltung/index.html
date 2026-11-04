@@ -7,7 +7,7 @@
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self'; connect-src https://api.github.com https://syring-digital.github.io; base-uri 'none'; form-action 'none'">
 <meta name="color-scheme" content="light dark">
-<title>Sperrliste verwalten – Mein RVED</title>
+<title>Verwaltung – Mein RVED</title>
 <link rel="icon" href="../icon.png">
 <style>
 :root{--bg:#f4f6f9;--card:#fff;--text:#1c1f24;--muted:#5c6470;--accent:#0b4f8a;--line:#dde2e8;--ok:#1f7a4d;--okbg:#e9f6ef;--warn:#9a5200;--warnbg:#fdf3e6;--err:#b3261e;--errbg:#fdecea;--field:#fff}
@@ -55,27 +55,78 @@ summary{cursor:pointer;font-weight:600}
 details ol,details ul{padding-left:20px}
 code{font:13px ui-monospace,Menlo,monospace;background:var(--bg);padding:1px 5px;border-radius:5px}
 .hidden{display:none}
+.tabs{display:flex;gap:6px;margin:0 0 18px;border-bottom:1px solid var(--line)}
+.tabs button{background:transparent;color:var(--muted);border-radius:10px 10px 0 0;padding:10px 16px;border-bottom:3px solid transparent}
+.tabs button[aria-selected=true]{color:var(--accent);border-bottom-color:var(--accent)}
+.eintrag{border:1px solid var(--line);border-radius:12px;padding:12px;margin:0 0 10px;background:var(--card)}
+.eintrag .dat{font-size:13px;color:var(--accent);font-weight:600}
+.eintrag .tit{font-weight:600;margin:2px 0}
+.eintrag .lnk{font:12px ui-monospace,Menlo,monospace;color:var(--muted);word-break:break-all}
+.eintrag .row{margin-top:10px;gap:8px}
+.eintrag button{padding:6px 12px;font-size:14px}
+.eintrag.neu{border-color:var(--ok)}
+.eintrag.bearb{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.kleben{position:sticky;bottom:0;background:var(--bg);padding:12px 0;border-top:1px solid var(--line);margin-top:8px}
 @media (max-width:520px){.stufen{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<header><div class="in"><img class="logo" src="../rved-logo.png" alt="RVED – Regionalverband Eder-Diemel e.V."><b>Mein RVED · Sperrliste</b></div></header>
+<header><div class="in"><img class="logo" src="../rved-logo.png" alt="RVED – Regionalverband Eder-Diemel e.V."><b>Mein RVED · Verwaltung</b></div></header>
 <main>
-<h1>Sperrliste verwalten</h1>
-<p class="lead">Widersprüche von Seglerinnen und Seglern gegen die Darstellung in der App (Art. 21 DSGVO). Namen verlassen diesen Browser nicht: Gespeichert und veröffentlicht werden nur Prüfwerte (SHA-256).</p>
+<nav class="tabs" role="tablist">
+  <button role="tab" id="tabAkt" aria-selected="true">Aktuelles</button>
+  <button role="tab" id="tabSperr" aria-selected="false">Sperrliste</button>
+</nav>
 
 <section class="card" id="zugang">
   <h2>1. Anmelden</h2>
-  <label for="token">GitHub-Zugangsschlüssel <span class="opt">(nur für „Eintragen“ und „Entfernen“)</span></label>
+  <label for="token">GitHub-Zugangsschlüssel <span class="opt">(zum Speichern von Änderungen)</span></label>
   <input type="password" id="token" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
   <label class="check"><input type="checkbox" id="merken"> Auf diesem Gerät merken</label>
   <div class="row">
     <button id="verbinden">Verbinden</button>
     <button class="sec hidden" id="abmelden">Abmelden</button>
   </div>
-  <div class="status" id="zugangStatus">Nicht angemeldet. „Prüfen“ funktioniert auch ohne Anmeldung.</div>
+  <div class="status" id="zugangStatus">Nicht angemeldet. Die Listen lassen sich auch ohne Anmeldung ansehen.</div>
 </section>
 
+<div id="seiteAkt">
+<h1>Aktuelles in der App</h1>
+<p class="lead">Die Meldungen auf der Startseite von Mein RVED. Oben steht die neueste. Änderungen erscheinen nach „Speichern“ etwa eine Minute später in der App, ohne App-Update.</p>
+
+<section class="card">
+  <h2 id="formTitel">Meldung hinzufügen</h2>
+  <label for="aTitel">Titel</label>
+  <input type="text" id="aTitel" autocomplete="off" placeholder="z. B. Für ein faires Wassermanagement">
+  <label for="aDatum">Datum <span class="opt">(Text, wie er in der App steht, z. B. 14.08.2026 oder Presse · Juni 2026)</span></label>
+  <input type="text" id="aDatum" autocomplete="off" placeholder="TT.MM.JJJJ">
+  <label for="aLink">Link zur PDF oder Seite <span class="opt">(muss mit https:// beginnen)</span></label>
+  <input type="text" id="aLink" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://www.rved.de/s/…pdf">
+  <div class="row">
+    <button id="aUebernehmen">Hinzufügen</button>
+    <button class="sec" id="aHeute" type="button">Heutiges Datum</button>
+    <button class="sec hidden" id="aAbbrechen" type="button">Abbrechen</button>
+  </div>
+  <div id="aMeldung"></div>
+</section>
+
+<section class="card">
+  <h2>Aktuelle Liste <span class="opt" id="aAnzahl"></span></h2>
+  <div id="aListe"><div class="status">Wird geladen …</div></div>
+  <div class="kleben">
+    <div class="row" style="margin-top:0">
+      <button id="aSpeichern" disabled>Speichern</button>
+      <button class="sec" id="aVerwerfen" disabled>Änderungen verwerfen</button>
+    </div>
+    <div class="status" id="aStatus"></div>
+    <div id="aErgebnis"></div>
+  </div>
+</section>
+</div>
+
+<div id="seiteSperr" class="hidden">
+<h1>Sperrliste verwalten</h1>
+<p class="lead">Widersprüche von Seglerinnen und Seglern gegen die Darstellung in der App (Art. 21 DSGVO). Namen verlassen diesen Browser nicht: Gespeichert und veröffentlicht werden nur Prüfwerte (SHA-256).</p>
 <section class="card">
   <h2>2. Person</h2>
   <label for="name">Name, wie er in den Ergebnissen steht</label>
@@ -117,6 +168,7 @@ code{font:13px ui-monospace,Menlo,monospace;background:var(--bg);padding:1px 5px
     <p><b>Gleiche Regeln wie in der App:</b> Reihenfolge, Groß- und Kleinschreibung, Umlaute, Bindestriche und Titel („Dr.“) spielen keine Rolle. „Syring, Oliver“ und „Dr. Oliver Syring“ ergeben denselben Prüfwert. Abweichende Schreibweisen („Süring“) als weitere Schreibweise eintragen.</p>
   </details>
 </section>
+</div>
 </main>
 
 <script>
@@ -312,12 +364,13 @@ const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&
 function anzeigeName() { return esc($("name").value.trim()); }
 
 function zeigeZugang() {
+  if (typeof aZeichnen === "function") aZeichnen();
   const an = !!verbunden;
   $("eintragen").disabled = !an; $("entfernen").disabled = !an;
   $("abmelden").classList.toggle("hidden", !an && !token);
   $("zugangStatus").textContent = an
     ? `Angemeldet. Auf der Liste: ${verbunden.liste.anonym.size} Prüfwerte „anonym“, ${verbunden.liste.profil.size} „Profil privat“.`
-    : "Nicht angemeldet. „Prüfen“ funktioniert auch ohne Anmeldung.";
+    : "Nicht angemeldet. Die Listen lassen sich auch ohne Anmeldung ansehen.";
 }
 
 async function beschaeftigt(knopf, arbeit) {
@@ -336,12 +389,14 @@ $("verbinden").addEventListener("click", () => beschaeftigt($("verbinden"), asyn
   verbunden = await laden();
   try { if ($("merken").checked) localStorage.setItem(SPEICHER, token); else localStorage.removeItem(SPEICHER); } catch (e) {}
   meldung("Verbunden. Die Liste kann jetzt geändert werden.", "ok");
+  await aAktualisiereNachZugang();
 }));
 
 $("abmelden").addEventListener("click", () => {
   token = ""; verbunden = null; $("token").value = ""; $("merken").checked = false;
   try { localStorage.removeItem(SPEICHER); } catch (e) {}
   zeigeZugang(); meldung("Abgemeldet. Der Schlüssel ist von diesem Gerät entfernt.", "info");
+  aAktualisiereNachZugang();
 });
 
 $("pruefen").addEventListener("click", () => beschaeftigt($("pruefen"), async () => {
@@ -373,6 +428,191 @@ $("entfernen").addEventListener("click", () => beschaeftigt($("entfernen"), asyn
   await warteAufVeroeffentlichung(o => [...werte].every(w => !o.anonym.has(w) && !o.profil.has(w)), el);
 }));
 
+
+// ---------- Reiter
+
+function zeigeSeite(akt) {
+  $("seiteAkt").classList.toggle("hidden", !akt);
+  $("seiteSperr").classList.toggle("hidden", akt);
+  $("tabAkt").setAttribute("aria-selected", akt);
+  $("tabSperr").setAttribute("aria-selected", !akt);
+}
+$("tabAkt").addEventListener("click", () => zeigeSeite(true));
+$("tabSperr").addEventListener("click", () => zeigeSeite(false));
+
+// ---------- Aktuelles (aktuelles.json)
+
+const A_DATEI = "aktuelles.json";
+const A_API = `https://api.github.com/repos/${REPO}/contents/${A_DATEI}`;
+const A_PAGES = "https://syring-digital.github.io/meinrved-termine/aktuelles.json";
+let aListe = [];          // Arbeitsstand
+let aOriginal = "";       // zuletzt geladener/gespeicherter Text
+let aBearbeite = -1;      // Index des Eintrags im Formular, -1 = neu
+let aMarkiert = -1;       // zuletzt hinzugefügt/geändert (nur Hervorhebung)
+
+const aText = liste => JSON.stringify(liste.map(e => ({ title: e.title, date: e.date, url: e.url })), null, 2) + "\n";
+const aGeaendert = () => aText(aListe) !== aOriginal;
+
+function aMelde(text, art = "info") {
+  const el = document.createElement("div");
+  el.className = `msg ${art}`; el.textContent = text;
+  $("aMeldung").replaceChildren(el);
+}
+
+function aNormal(daten) {
+  if (!Array.isArray(daten)) throw new Error("Die Datei aktuelles.json hat ein unerwartetes Format.");
+  return daten.map(e => ({ title: String(e.title || ""), date: String(e.date || ""), url: String(e.url || "") }));
+}
+
+async function aLaden() {
+  if (token) {
+    const r = await fetch(`${A_API}?ref=main&t=${Date.now()}`, { headers: kopf(), cache: "no-store" });
+    if (r.status === 401) throw new Error("Der Zugangsschlüssel ist ungültig oder abgelaufen.");
+    if (r.status === 403 || r.status === 404) throw new Error("Kein Zugriff auf aktuelles.json. Hat der Schlüssel „Contents: Read and write“ für meinrved-termine?");
+    if (!r.ok) throw new Error(`GitHub antwortet mit Status ${r.status}.`);
+    const j = await r.json();
+    return { sha: j.sha, liste: aNormal(JSON.parse(b64ZuText(j.content))) };
+  }
+  const r = await fetch(`${A_PAGES}?t=${Date.now()}`, { cache: "no-store" });
+  if (!r.ok) throw new Error(`Die veröffentlichte Liste ist nicht erreichbar (Status ${r.status}).`);
+  return { sha: null, liste: aNormal(await r.json()) };
+}
+
+let aSha = null;
+async function aNeuLaden() {
+  const g = await aLaden();
+  aSha = g.sha; aListe = g.liste; aOriginal = aText(aListe); aBearbeite = -1; aMarkiert = -1;
+  aFormLeeren(); aZeichnen();
+}
+
+function aButton(text, klasse, fn, aus) {
+  const b = document.createElement("button");
+  b.type = "button"; b.textContent = text; if (klasse) b.className = klasse; b.disabled = !!aus; b.addEventListener("click", fn);
+  return b;
+}
+
+function aZeichnen() {
+  const an = !!verbunden || !!token;
+  const box = $("aListe"); box.replaceChildren();
+  if (!aListe.length) { const d = document.createElement("div"); d.className = "status"; d.textContent = "Noch keine Meldungen."; box.append(d); }
+  aListe.forEach((e, i) => {
+    const k = document.createElement("div");
+    k.className = "eintrag" + (i === aBearbeite ? " bearb" : i === aMarkiert ? " neu" : "");
+    const d = document.createElement("div"); d.className = "dat"; d.textContent = e.date;
+    const t = document.createElement("div"); t.className = "tit"; t.textContent = e.title;
+    const l = document.createElement("div"); l.className = "lnk"; l.textContent = e.url;
+    const row = document.createElement("div"); row.className = "row";
+    row.append(
+      aButton("↑", "sec", () => aVerschiebe(i, -1), !an || i === 0),
+      aButton("↓", "sec", () => aVerschiebe(i, 1), !an || i === aListe.length - 1),
+      aButton("Bearbeiten", "sec", () => aBearbeiten(i), !an),
+      aButton("Löschen", "del", () => aLoeschen(i), !an)
+    );
+    k.append(d, t, l, row); box.append(k);
+  });
+  $("aAnzahl").textContent = aListe.length ? `(${aListe.length})` : "";
+  const dirty = aGeaendert();
+  $("aSpeichern").disabled = !an || !dirty;
+  $("aVerwerfen").disabled = !dirty;
+  $("aUebernehmen").disabled = !an;
+  $("aStatus").textContent = !an ? "Zum Ändern oben anmelden. Angezeigt wird der veröffentlichte Stand."
+    : dirty ? "Es gibt ungespeicherte Änderungen." : "Alles gespeichert.";
+}
+
+function aVerschiebe(i, d) {
+  const j = i + d; if (j < 0 || j >= aListe.length) return;
+  [aListe[i], aListe[j]] = [aListe[j], aListe[i]];
+  aMarkiert = j; aBearbeite = -1; aFormLeeren(); aZeichnen();
+}
+function aLoeschen(i) {
+  if (!confirm(`„${aListe[i].title}“ aus der Liste entfernen?`)) return;
+  aListe.splice(i, 1); aBearbeite = -1; aMarkiert = -1; aFormLeeren(); aZeichnen();
+}
+function aBearbeiten(i) {
+  aBearbeite = i;
+  $("aTitel").value = aListe[i].title; $("aDatum").value = aListe[i].date; $("aLink").value = aListe[i].url;
+  $("formTitel").textContent = "Meldung bearbeiten";
+  $("aUebernehmen").textContent = "Übernehmen";
+  $("aAbbrechen").classList.remove("hidden");
+  aZeichnen(); $("aTitel").scrollIntoView({ behavior: "smooth", block: "center" }); $("aTitel").focus();
+}
+function aFormLeeren() {
+  $("aTitel").value = ""; $("aDatum").value = ""; $("aLink").value = "";
+  $("formTitel").textContent = "Meldung hinzufügen";
+  $("aUebernehmen").textContent = "Hinzufügen";
+  $("aAbbrechen").classList.add("hidden");
+}
+
+$("aHeute").addEventListener("click", () => {
+  const d = new Date();
+  $("aDatum").value = `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}`;
+});
+$("aAbbrechen").addEventListener("click", () => { aBearbeite = -1; aFormLeeren(); $("aMeldung").replaceChildren(); aZeichnen(); });
+
+$("aUebernehmen").addEventListener("click", () => {
+  const titel = $("aTitel").value.trim().replace(/\s+/g, " "), datum = $("aDatum").value.trim(), link = $("aLink").value.trim();
+  if (!titel) return aMelde("Bitte einen Titel eintragen.", "err");
+  if (!datum) return aMelde("Bitte ein Datum eintragen.", "err");
+  let u;
+  try { u = new URL(link); } catch (e) { return aMelde("Der Link ist ungültig. Bitte die vollständige Adresse einfügen.", "err"); }
+  if (u.protocol !== "https:") return aMelde("Der Link muss mit https:// beginnen.", "err");
+  const doppelt = aListe.findIndex((e, i) => e.url === u.href && i !== aBearbeite);
+  if (doppelt >= 0) return aMelde(`Dieser Link steht schon in der Liste („${aListe[doppelt].title}“).`, "warn");
+  const eintrag = { title: titel, date: datum, url: u.href };
+  if (aBearbeite >= 0) { aListe[aBearbeite] = eintrag; aMarkiert = aBearbeite; }
+  else { aListe.unshift(eintrag); aMarkiert = 0; }
+  aBearbeite = -1; aFormLeeren(); $("aMeldung").replaceChildren(); aZeichnen();
+}) ;
+
+$("aVerwerfen").addEventListener("click", async () => {
+  if (!confirm("Alle ungespeicherten Änderungen verwerfen?")) return;
+  try { await aNeuLaden(); aMelde("Änderungen verworfen.", "info"); } catch (e) { aMelde(e.message, "err"); }
+});
+
+$("aSpeichern").addEventListener("click", async () => {
+  const knopf = $("aSpeichern"), text = knopf.textContent;
+  knopf.disabled = true; knopf.textContent = "Bitte warten …";
+  const ergebnis = $("aErgebnis"); ergebnis.replaceChildren();
+  try {
+    const neu = aText(aListe);
+    // aktuellen Stand holen: hat jemand anderes inzwischen gespeichert, nicht überschreiben
+    const jetzt = await aLaden();
+    if (aText(jetzt.liste) !== aOriginal) throw new Error("Die Liste wurde inzwischen an anderer Stelle geändert. Bitte „Änderungen verwerfen“, dann neu bearbeiten.");
+    const r = await fetch(A_API, {
+      method: "PUT", headers: { ...kopf(), "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "Aktuelles: Meldungen aktualisiert", content: textZuB64(neu), sha: jetzt.sha, branch: "main" })
+    });
+    if (r.status === 409 || r.status === 422) throw new Error("Die Liste wurde gleichzeitig geändert. Bitte neu laden und noch einmal versuchen.");
+    if (r.status === 401) throw new Error("Der Zugangsschlüssel ist ungültig oder abgelaufen.");
+    if (r.status === 403 || r.status === 404) throw new Error("Keine Schreibrechte. Der Schlüssel braucht „Contents: Read and write“ für meinrved-termine.");
+    if (!r.ok) throw new Error(`Speichern fehlgeschlagen (Status ${r.status}).`);
+    const j = await r.json(); aSha = j.content.sha; aOriginal = neu; aMarkiert = -1;
+    aZeichnen();
+    const el = document.createElement("div"); el.className = "msg info"; el.textContent = "Gespeichert. Wird veröffentlicht …"; ergebnis.append(el);
+    let online = false;
+    for (let i = 0; i < 36 && !online; i++) {
+      await new Promise(res => setTimeout(res, 5000));
+      try {
+        const o = await fetch(`${A_PAGES}?t=${Date.now()}`, { cache: "no-store" });
+        if (o.ok && aText(aNormal(await o.json())) === neu) online = true;
+      } catch (e) { /* weiter warten */ }
+    }
+    el.className = "msg " + (online ? "ok" : "warn");
+    el.textContent = online ? "Online. Die App zeigt die Änderung beim nächsten Öffnen der Startseite."
+                            : "Die Veröffentlichung dauert ungewöhnlich lange. Gespeichert ist die Liste trotzdem; bitte später die Seite neu laden und prüfen.";
+  } catch (e) {
+    const el = document.createElement("div"); el.className = "msg err"; el.textContent = e.message || String(e); ergebnis.replaceChildren(el);
+  } finally { knopf.textContent = text; aZeichnen(); }
+});
+
+window.addEventListener("beforeunload", e => { if (aGeaendert()) { e.preventDefault(); e.returnValue = ""; } });
+
+/** Nach Anmelden/Abmelden die Liste neu laden (mit Schlüssel direkt aus dem Repository). */
+async function aAktualisiereNachZugang() {
+  if (aGeaendert() && !confirm("Ungespeicherte Änderungen an den Meldungen gehen verloren. Fortfahren?")) { aZeichnen(); return; }
+  try { await aNeuLaden(); } catch (e) { aMelde(e.message, "err"); aZeichnen(); }
+}
+
 ["name", "sl", "varianten"].forEach(id => $(id).addEventListener("input", vorschau));
 
 try {
@@ -380,6 +620,7 @@ try {
   if (gemerkt) { $("token").value = gemerkt; $("merken").checked = true; $("verbinden").click(); }
 } catch (e) {}
 zeigeZugang();
+if (!token) aNeuLaden().catch(e => aMelde(e.message, "err"));
 </script>
 </body>
 </html>

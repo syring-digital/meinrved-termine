@@ -24,3 +24,11 @@ GitHub-Zugangsschlüssel mit „Contents: Read and write“ für dieses Repo). O
 `veroeffentlichen.sh` holt die Sperrliste ebenfalls zuerst von GitHub, damit Änderungen aus dem Browser nicht überschrieben werden.
 
 Das Skript schreibt auch `MeinRVED/sperrliste.json` (im App-Paket). Schlüssel und Hash müssen mit `MeinRVED/Sperrliste.swift` übereinstimmen.
+
+## Aktuelles (Meldungen der Startseite)
+
+`aktuelles.json` enthält die Meldungen, die die App unter „Aktuelles“ anzeigt (Felder `title`, `date`, `url`; oben steht die neueste).
+Veröffentlicht unter `https://syring-digital.github.io/meinrved-termine/aktuelles.json`; die App (ab 0.25.1) lädt sie beim Öffnen der Startseite.
+Gepflegt wird sie im Browser unter https://meinrved.syring-digital.de/verwaltung/ (Reiter „Aktuelles“, gleicher Zugangsschlüssel wie für die Sperrliste):
+Hinzufügen, Bearbeiten, Löschen, Umsortieren, dann „Speichern“. Titel, Datum und Link werden von Hand eingetragen.
+Wie bei der Sperrliste ist der Stand auf GitHub maßgeblich; `veroeffentlichen.sh` zieht ihn vor dem Abgleich.

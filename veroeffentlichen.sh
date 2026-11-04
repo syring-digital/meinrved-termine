@@ -16,6 +16,10 @@ if [ -f "$DST/sperrliste.json" ]; then
   cp "$DST/sperrliste.json" "$SRC/sperrliste.json"
   cp "$DST/sperrliste.json" "$SRC/../../MeinRVED/sperrliste.json"
 fi
+# Ebenso die Meldungen der Startseite (Reiter „Aktuelles“ der Verwaltungsseite).
+if [ -f "$DST/aktuelles.json" ]; then
+  cp "$DST/aktuelles.json" "$SRC/aktuelles.json"
+fi
 rsync -a --delete --exclude .git --exclude site --exclude __pycache__ "$SRC"/ "$DST"/
 cd "$DST"
 git add -A
