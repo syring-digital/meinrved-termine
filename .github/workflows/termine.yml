@@ -27,7 +27,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python termine_ics.py site/termine.ics
-      - run: cp index.html site/index.html
+      - run: cp index.html site/index.html && cp sperrliste.json site/sperrliste.json
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
