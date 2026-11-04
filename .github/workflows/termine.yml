@@ -1,5 +1,7 @@
 # Kalenderabo der WSGE-Termine: liest wsge.de, schreibt termine.ics und veröffentlicht sie über GitHub Pages.
 # Läuft mehrmals täglich; fällt wsge.de aus, bleibt die zuletzt veröffentlichte Datei erhalten.
+# Veröffentlicht wird per Branch "gh-pages" (Pages-Quelle: Branch). Der frühere Weg über deploy-pages blieb am 04.11.2026
+# im Status "leer" hängen und hat Änderungen der Sperrliste nicht ausgeliefert.
 name: Termine aktualisieren
 on:
   schedule:
@@ -8,9 +10,7 @@ on:
   push:
     branches: [main]
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 concurrency:
   group: termine
   cancel-in-progress: false
@@ -18,9 +18,6 @@ jobs:
   veroeffentlichen:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -28,9 +25,13 @@ jobs:
           python-version: '3.12'
       - run: python termine_ics.py site/termine.ics
       - run: cp index.html site/index.html && cp sperrliste.json site/sperrliste.json
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-      - id: deploy
-        uses: actions/deploy-pages@v4
+      - name: Auf gh-pages veröffentlichen
+        run: |
+          touch site/.nojekyll
+          cd site
+          git init -q -b gh-pages
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Veröffentlicht von ${GITHUB_SHA::7}"
+          git push -q --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
