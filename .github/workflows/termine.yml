@@ -3,7 +3,7 @@
 name: Termine aktualisieren
 on:
   schedule:
-    - cron: '20 4,10,16 * * *'
+    - cron: '20 5,16 * * *'
   workflow_dispatch:
   push:
     branches: [main]
