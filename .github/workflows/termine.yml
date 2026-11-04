@@ -24,7 +24,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python termine_ics.py site/termine.ics
-      - run: cp index.html site/index.html && cp sperrliste.json site/sperrliste.json
+      - run: cp index.html site/index.html && cp sperrliste.json site/sperrliste.json && { [ ! -f aktuelles.json ] || cp aktuelles.json site/aktuelles.json; }
       - name: Auf gh-pages veröffentlichen
         run: |
           touch site/.nojekyll
