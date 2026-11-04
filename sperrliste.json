@@ -1,6 +1,9 @@
 {
   "hinweis": "Widersprüche nach Art. 21 DSGVO gegen die Darstellung in Mein RVED. Nur SHA-256-Werte, keine Namen. anonym = überall anonymisiert, profil = nur das Seglerprofil ist privat.",
   "stand": "2026-11-04",
-  "anonym": [],
+  "anonym": [
+    "3ba2a867a6d953082b8622d7f02381033330da997f0292c863483beb2fd26e6f",
+    "c655d3f1ac592c1dec48b5a27c606b2b275980d1e535f5a36173a7d3897f62ff"
+  ],
   "profil": []
 }
