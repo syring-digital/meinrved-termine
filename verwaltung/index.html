@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self'; connect-src https://api.github.com https://syring-digital.github.io; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self'; connect-src https://api.github.com https://syring-digital.github.io https://raw.githubusercontent.com; base-uri 'none'; form-action 'none'">
 <meta name="color-scheme" content="light dark">
 <title>Verwaltung – Mein RVED</title>
 <link rel="icon" href="../icon.png">
@@ -162,7 +162,7 @@ code{font:13px ui-monospace,Menlo,monospace;background:var(--bg);padding:1px 5px
       <li>Permissions › Repository permissions › <b>Contents: Read and write</b>. Sonst nichts.</li>
       <li>Schlüssel kopieren und oben einfügen. Er darf nur diese eine Liste ändern, sonst nichts.</li>
     </ol>
-    <p><b>Was beim Speichern passiert:</b> Die Seite liest <code>sperrliste.json</code> aus dem Repository, ändert sie und speichert sie mit einem neutralen Commit-Text ohne Namen. GitHub veröffentlicht die Liste nach etwa einer Minute. Die Apps übernehmen sie beim nächsten Start, spätestens nach sechs Stunden, ohne Update.</p>
+    <p><b>Was beim Speichern passiert:</b> Die Seite liest <code>sperrliste.json</code> aus dem Repository, ändert sie und speichert sie mit einem neutralen Commit-Text ohne Namen. GitHub veröffentlicht die Liste nach etwa einer Minute. Die Apps übernehmen sie beim nächsten Start, spätestens nach etwa 15 Minuten, ohne Update.</p>
     <p><b>Bei „Vollständig anonym“ zusätzlich:</b> mit dem nächsten App-Update die mitgelieferten WSGE-Sicherungen (<code>MeinRVED/Seed</code>) und das Quellen-Archiv bereinigen. Vor dem App-Build <code>python3 Tools/Termine/sperrliste.py holen</code> ausführen, damit die Liste im App-Paket aktuell ist.</p>
     <p><b>Frist und Nachweis:</b> spätestens einen Monat nach Eingang umsetzen. Die E-Mail mit dem Widerspruch im Postfach aufbewahren, solange er gilt. Namen nicht in Dateien oder Commit-Texte schreiben.</p>
     <p><b>Gleiche Regeln wie in der App:</b> Reihenfolge, Groß- und Kleinschreibung, Umlaute, Bindestriche und Titel („Dr.“) spielen keine Rolle. „Syring, Oliver“ und „Dr. Oliver Syring“ ergeben denselben Prüfwert. Abweichende Schreibweisen („Süring“) als weitere Schreibweise eintragen.</p>
@@ -176,7 +176,8 @@ code{font:13px ui-monospace,Menlo,monospace;background:var(--bg);padding:1px 5px
 const REPO = "syring-digital/meinrved-termine";
 const DATEI = "sperrliste.json";
 const API = `https://api.github.com/repos/${REPO}/contents/${DATEI}`;
-const PAGES = "https://syring-digital.github.io/meinrved-termine/sperrliste.json";
+// Direkt aus dem Repository: sofort aktuell und unabhängig vom (manchmal langsamen) GitHub-Pages-Aufbau. Die Apps lesen dieselbe Quelle.
+const PAGES = "https://raw.githubusercontent.com/syring-digital/meinrved-termine/main/sperrliste.json";
 const HINWEIS = "Widersprüche nach Art. 21 DSGVO gegen die Darstellung in Mein RVED. Nur SHA-256-Werte, keine Namen. anonym = überall anonymisiert, profil = nur das Seglerprofil ist privat.";
 const TITEL = new Set(["dr", "prof", "dipl", "ing"]);
 const SPEICHER = "meinrved.sperrliste.token";
@@ -329,19 +330,19 @@ async function speichern(aendern, nachricht) {
 
 /** Wartet, bis GitHub Pages den neuen Stand ausliefert. */
 async function warteAufVeroeffentlichung(pruefe, el) {
-  for (let i = 0; i < 36; i++) {
+  for (let i = 0; i < 18; i++) {
     await new Promise(r => setTimeout(r, 5000));
     try {
       const online = await ladenOhneAnmeldung();
       if (pruefe(online)) {
         el.className = "msg ok";
-        el.innerHTML += "<br><b>Online.</b> Die Apps übernehmen die Änderung beim nächsten Start, spätestens nach sechs Stunden.";
+        el.innerHTML += "<br><b>Veröffentlicht.</b> Die Apps übernehmen die Änderung beim nächsten Start, spätestens nach 10 Minuten (zuzüglich bis zu 5 Minuten Zwischenspeicher bei GitHub).";
         return;
       }
     } catch (e) { /* weiter warten */ }
   }
   el.className = "msg warn";
-  el.innerHTML += "<br>Die Veröffentlichung dauert ungewöhnlich lange. Gespeichert ist die Änderung trotzdem; bitte später mit „Prüfen“ kontrollieren.";
+  el.innerHTML += "<br>Gespeichert, aber noch nicht in der Ausgabe sichtbar. Die Änderung steht im Repository; bitte später mit „Prüfen“ kontrollieren.";
 }
 
 // ---------- Oberfläche
@@ -415,7 +416,7 @@ $("eintragen").addEventListener("click", () => beschaeftigt($("eintragen"), asyn
   if (!geaendert) { meldung(`<b>${anzeigeName()}</b> steht bereits mit Stufe „${STUFENTEXT[stufe]}“ auf der Liste.`, "info"); return; }
   const el = meldung(`Gespeichert: <b>${anzeigeName()}</b> – ${STUFENTEXT[stufe]}. Wird veröffentlicht …` +
     (stufe === "anonym" ? "<br>Mit dem nächsten App-Update außerdem die WSGE-Sicherungen in der App und das Quellen-Archiv bereinigen." : ""), "info");
-  await warteAufVeroeffentlichung(o => [...werte].every(w => o[stufe].has(w)), el);
+  warteAufVeroeffentlichung(o => [...werte].every(w => o[stufe].has(w)), el);
 }));
 
 $("entfernen").addEventListener("click", () => beschaeftigt($("entfernen"), async () => {
@@ -425,7 +426,7 @@ $("entfernen").addEventListener("click", () => beschaeftigt($("entfernen"), asyn
                                         "Sperrliste: Eintrag entfernt");
   if (!geaendert) { meldung(`<b>${anzeigeName()}</b> stand nicht auf der Liste.`, "info"); return; }
   const el = meldung(`Entfernt: <b>${anzeigeName()}</b>. Wird veröffentlicht …`, "info");
-  await warteAufVeroeffentlichung(o => [...werte].every(w => !o.anonym.has(w) && !o.profil.has(w)), el);
+  warteAufVeroeffentlichung(o => [...werte].every(w => !o.anonym.has(w) && !o.profil.has(w)), el);
 }));
 
 
@@ -444,7 +445,7 @@ $("tabSperr").addEventListener("click", () => zeigeSeite(false));
 
 const A_DATEI = "aktuelles.json";
 const A_API = `https://api.github.com/repos/${REPO}/contents/${A_DATEI}`;
-const A_PAGES = "https://syring-digital.github.io/meinrved-termine/aktuelles.json";
+const A_PAGES = "https://raw.githubusercontent.com/syring-digital/meinrved-termine/main/aktuelles.json";
 let aListe = [];          // Arbeitsstand
 let aOriginal = "";       // zuletzt geladener/gespeicherter Text
 let aBearbeite = -1;      // Index des Eintrags im Formular, -1 = neu
@@ -587,23 +588,32 @@ $("aSpeichern").addEventListener("click", async () => {
     if (r.status === 403 || r.status === 404) throw new Error("Keine Schreibrechte. Der Schlüssel braucht „Contents: Read and write“ für meinrved-termine.");
     if (!r.ok) throw new Error(`Speichern fehlgeschlagen (Status ${r.status}).`);
     const j = await r.json(); aSha = j.content.sha; aOriginal = neu; aMarkiert = -1;
-    aZeichnen();
-    const el = document.createElement("div"); el.className = "msg info"; el.textContent = "Gespeichert. Wird veröffentlicht …"; ergebnis.append(el);
-    let online = false;
-    for (let i = 0; i < 36 && !online; i++) {
-      await new Promise(res => setTimeout(res, 5000));
-      try {
-        const o = await fetch(`${A_PAGES}?t=${Date.now()}`, { cache: "no-store" });
-        if (o.ok && aText(aNormal(await o.json())) === neu) online = true;
-      } catch (e) { /* weiter warten */ }
-    }
-    el.className = "msg " + (online ? "ok" : "warn");
-    el.textContent = online ? "Online. Die App zeigt die Änderung beim nächsten Öffnen der Startseite."
-                            : "Die Veröffentlichung dauert ungewöhnlich lange. Gespeichert ist die Liste trotzdem; bitte später die Seite neu laden und prüfen.";
+    knopf.textContent = text; aZeichnen();      // Speichern ist abgeschlossen; die Prüfung der Veröffentlichung läuft im Hintergrund weiter
+    const el = document.createElement("div"); el.className = "msg ok";
+    el.textContent = "Gespeichert. Die Prüfung der Veröffentlichung läuft …"; ergebnis.replaceChildren(el);
+    aPruefeOnline(neu, el);
+    return;
   } catch (e) {
     const el = document.createElement("div"); el.className = "msg err"; el.textContent = e.message || String(e); ergebnis.replaceChildren(el);
   } finally { knopf.textContent = text; aZeichnen(); }
 });
+
+/** Prüft im Hintergrund, ob die gespeicherte Liste ausgeliefert wird (höchstens 90 Sekunden, blockiert nichts). */
+async function aPruefeOnline(erwartet, el) {
+  for (let i = 0; i < 18; i++) {
+    try {
+      const o = await fetch(`${A_PAGES}?t=${Date.now()}`, { cache: "no-store" });
+      if (o.ok && aText(aNormal(await o.json())) === erwartet) {
+        el.className = "msg ok";
+        el.textContent = "Veröffentlicht. Die App zeigt die Änderung beim nächsten Öffnen der Startseite, spätestens nach etwa 15 Minuten.";
+        return;
+      }
+    } catch (e) { /* weiter prüfen */ }
+    await new Promise(res => setTimeout(res, 5000));
+  }
+  el.className = "msg warn";
+  el.textContent = "Gespeichert, aber noch nicht in der Ausgabe sichtbar. Das ist unkritisch: Die Änderung steht im Repository und erscheint in der App, sobald GitHub sie ausliefert.";
+}
 
 window.addEventListener("beforeunload", e => { if (aGeaendert()) { e.preventDefault(); e.returnValue = ""; } });
 
