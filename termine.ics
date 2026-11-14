@@ -1,0 +1,255 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Mein RVED//WSGE-Termine//DE
+CALSCALE:GREGORIAN
+X-WR-CALNAME:Mein RVED Termine
+X-WR-CALDESC:Termine von RVED und WSGE (Quelle: wsge.de). Alle Angaben ohn
+ e Gewähr.
+X-WR-TIMEZONE:Europe/Berlin
+REFRESH-INTERVAL;VALUE=DURATION:PT12H
+X-PUBLISHED-TTL:PT12H
+BEGIN:VEVENT
+UID:637df2aeaad312597ce0@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260405
+DTEND;VALUE=DATE:20260406
+SUMMARY:Osterbrunch
+LOCATION:Asel-Süd – Herzhausen
+DESCRIPTION:Vereinstermin\nVeranstalter: SCAS\nalle Bootsklassen\nhttp://w
+ sge.de/veranstaltungen/
+URL:http://wsge.de/veranstaltungen/
+END:VEVENT
+BEGIN:VEVENT
+UID:f7a3a09696c1867be5f5@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260418
+DTEND;VALUE=DATE:20260420
+SUMMARY:Ederseepokal H-Boot
+DESCRIPTION:Ranglisten-Regatta\nVeranstalter: ESV\n1. Lauf Hessenmeistersc
+ haft\nhttps://www.manage2sail.com/de-DE/event/ed1119f6-d860-4a6e-9a28-814
+ cbe0f2390
+URL:https://www.manage2sail.com/de-DE/event/ed1119f6-d860-4a6e-9a28-814cbe
+ 0f2390
+END:VEVENT
+BEGIN:VEVENT
+UID:ee3fb43e422128efc683@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260425
+DTEND;VALUE=DATE:20260426
+SUMMARY:SCE Nationalpark-Regatta
+DESCRIPTION:Yardstick-Regatta (Ederseemeisterschaft)\nVeranstalter: SCE\nh
+ ttp://wsge.de/regatta/?rg=207
+URL:http://wsge.de/regatta/?rg=207
+END:VEVENT
+BEGIN:VEVENT
+UID:dc7f460dc2e6fd2fe87c@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260501
+DTEND;VALUE=DATE:20260502
+SUMMARY:Vollstauerlebnis
+LOCATION:Bringhausen – Herzhausen
+DESCRIPTION:RVED-Veranstaltung\nVeranstalter: RVED\nalle Bootsklassen\nhtt
+ p://wsge.de/veranstaltungen/
+URL:http://wsge.de/veranstaltungen/
+END:VEVENT
+BEGIN:VEVENT
+UID:143f4cad7027c0306f81@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260509
+DTEND;VALUE=DATE:20260511
+SUMMARY:Auftakt Jugendtraining mit allen Vereinen
+LOCATION:Bringhausen
+DESCRIPTION:Vereinstermin\nVeranstalter: SSGE\nOptimist\, Laser\, Big\, 2.
+ 4mR\nhttp://wsge.de/veranstaltungen/
+URL:http://wsge.de/veranstaltungen/
+END:VEVENT
+BEGIN:VEVENT
+UID:4a7fbca92a93c3c0c0cc@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260514
+DTEND;VALUE=DATE:20260515
+SUMMARY:SSGE Bringhausen-Cup
+DESCRIPTION:Yardstick-Regatta (Ederseemeisterschaft)\nVeranstalter: SSGE\n
+ http://wsge.de/regatta/?rg=208
+URL:http://wsge.de/regatta/?rg=208
+END:VEVENT
+BEGIN:VEVENT
+UID:3b2a00dbd1f2cdc06bad@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260515
+DTEND;VALUE=DATE:20260518
+SUMMARY:Edersee-Cup 2.4mR
+DESCRIPTION:Ranglisten-Regatta\nVeranstalter: SSGE\nhttps://www.manage2sai
+ l.com/de-DE/event/8fe4725a-757c-40f4-8153-f5c1aa1f2d22
+URL:https://www.manage2sail.com/de-DE/event/8fe4725a-757c-40f4-8153-f5c1aa
+ 1f2d22
+END:VEVENT
+BEGIN:VEVENT
+UID:85874885b5af9343a698@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260523
+DTEND;VALUE=DATE:20260524
+SUMMARY:Training für Regattainteressierte
+LOCATION:Rehbach
+DESCRIPTION:Vereinstermin\nVeranstalter: WSGE\nalle Bootsklassen\nhttp://w
+ sge.de/veranstaltungen/
+URL:http://wsge.de/veranstaltungen/
+END:VEVENT
+BEGIN:VEVENT
+UID:689cd5c0ca6fe6469fc9@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260524
+DTEND;VALUE=DATE:20260525
+SUMMARY:SCE Blaues Band
+DESCRIPTION:Yardstick-Regatta (Ederseemeisterschaft)\nVeranstalter: SCE\nh
+ ttp://wsge.de/regatta/?rg=209
+URL:http://wsge.de/regatta/?rg=209
+END:VEVENT
+BEGIN:VEVENT
+UID:8b6cc5e69423843c8d5a@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260530
+DTEND;VALUE=DATE:20260531
+SUMMARY:SCAS Um die Wurst
+DESCRIPTION:Yardstick-Regatta (Ederseemeisterschaft)\nVeranstalter: SCAS\n
+ http://wsge.de/regatta/?rg=210
+URL:http://wsge.de/regatta/?rg=210
+END:VEVENT
+BEGIN:VEVENT
+UID:97ad3246291e9ace2133@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260604
+DTEND;VALUE=DATE:20260608
+SUMMARY:German Open & Westdeutsche Meisterschaft Soling
+DESCRIPTION:Ranglisten-Regatta\nVeranstalter: ESV\nhttps://www.manage2sail
+ .com/de-DE/event/WDM2026
+URL:https://www.manage2sail.com/de-DE/event/WDM2026
+END:VEVENT
+BEGIN:VEVENT
+UID:96d8a01a4abf3911b44c@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260613
+DTEND;VALUE=DATE:20260615
+SUMMARY:Edersee-Cup Fighter
+DESCRIPTION:Ranglisten-Regatta\nVeranstalter: SSGE\nhttps://www.manage2sai
+ l.com/de-DE/event/HFM26
+URL:https://www.manage2sail.com/de-DE/event/HFM26
+END:VEVENT
+BEGIN:VEVENT
+UID:d8ed2d7e2d6eeff866d3@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260613
+DTEND;VALUE=DATE:20260615
+SUMMARY:H-Boot Flottenmeisterschaft
+DESCRIPTION:Ranglisten-Regatta\nVeranstalter: SSGE\n2. Lauf Hessenmeisters
+ chaft\nhttps://www.manage2sail.com/de-DE/event/ad81c6aa-be84-4e28-8825-a3
+ 45daf0687c
+URL:https://www.manage2sail.com/de-DE/event/ad81c6aa-be84-4e28-8825-a345da
+ f0687c
+END:VEVENT
+BEGIN:VEVENT
+UID:48bba11f5d09bc4a34c6@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260620
+DTEND;VALUE=DATE:20260621
+SUMMARY:WSVR-Cup
+DESCRIPTION:Yardstick-Regatta (Ederseemeisterschaft)\nVeranstalter: WSVR\n
+ http://wsge.de/regatta/?rg=211
+URL:http://wsge.de/regatta/?rg=211
+END:VEVENT
+BEGIN:VEVENT
+UID:2d25dc5f58a5b85f24a4@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260627
+DTEND;VALUE=DATE:20260629
+SUMMARY:Edersee-Cup J22
+DESCRIPTION:Ranglisten-Regatta\nVeranstalter: SSGE\nhttps://www.manage2sai
+ l.com/de-DE/event/6233004f-6f07-428c-9f98-1472ea2cd525
+URL:https://www.manage2sail.com/de-DE/event/6233004f-6f07-428c-9f98-1472ea
+ 2cd525
+END:VEVENT
+BEGIN:VEVENT
+UID:c0a254337b48317ed166@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260627
+DTEND;VALUE=DATE:20260629
+SUMMARY:Inklusionswochenende
+LOCATION:Rehbach
+DESCRIPTION:Vereinstermin\nVeranstalter: ESV’86\nhttp://wsge.de/veransta
+ ltungen/
+URL:http://wsge.de/veranstaltungen/
+END:VEVENT
+BEGIN:VEVENT
+UID:fe43855c2d18af7e884d@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260704
+DTEND;VALUE=DATE:20260705
+SUMMARY:Clubmeisterschaft SCAS
+LOCATION:Asel-Süd
+DESCRIPTION:Vereinstermin\nVeranstalter: SCAS\nalle Bootsklassen\nhttp://w
+ sge.de/veranstaltungen/
+URL:http://wsge.de/veranstaltungen/
+END:VEVENT
+BEGIN:VEVENT
+UID:91a54a065e3bb7fefdcf@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260704
+DTEND;VALUE=DATE:20260705
+SUMMARY:SCAS Freundschaftsregatta
+DESCRIPTION:Yardstick-Regatta (Ederseemeisterschaft)\nVeranstalter: SCAS\n
+ http://wsge.de/regatta/?rg=212
+URL:http://wsge.de/regatta/?rg=212
+END:VEVENT
+BEGIN:VEVENT
+UID:ff148d9e56b60884a16c@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260711
+DTEND;VALUE=DATE:20260712
+SUMMARY:ESV Edertal-Cup
+DESCRIPTION:Yardstick-Regatta (Ederseemeisterschaft)\nVeranstalter: ESV\nh
+ ttp://wsge.de/regatta/?rg=213
+URL:http://wsge.de/regatta/?rg=213
+END:VEVENT
+BEGIN:VEVENT
+UID:410df74f10130e59d237@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260808
+DTEND;VALUE=DATE:20260809
+SUMMARY:Ederseeralley
+DESCRIPTION:Vereinstermin\nVeranstalter: WSGE\nhttp://wsge.de/veranstaltun
+ gen/
+URL:http://wsge.de/veranstaltungen/
+END:VEVENT
+BEGIN:VEVENT
+UID:cb336dbdcf11f8ddfc04@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260815
+DTEND;VALUE=DATE:20260816
+SUMMARY:Jugendabschlussregatta
+LOCATION:Bringhausen
+DESCRIPTION:Vereinstermin\nVeranstalter: SSGE\nOptimist\nhttp://wsge.de/ve
+ ranstaltungen/
+URL:http://wsge.de/veranstaltungen/
+END:VEVENT
+BEGIN:VEVENT
+UID:ffa05caac6602195728a@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20260822
+DTEND;VALUE=DATE:20260823
+SUMMARY:Ederseemeisterschaftsfeier\, 40. Jubiläum ESV’86 und Spaßregat
+ ta
+DESCRIPTION:Vereinstermin\nVeranstalter: ESV’86\nhttp://wsge.de/veransta
+ ltungen/
+URL:http://wsge.de/veranstaltungen/
+END:VEVENT
+BEGIN:VEVENT
+UID:825c6d0dfe7bb6baa0a9@meinrved.app
+DTSTAMP:20261114T165616Z
+DTSTART;VALUE=DATE:20261017
+DTEND;VALUE=DATE:20261018
+SUMMARY:Aktion sauberer Edersee
+DESCRIPTION:RVED-Veranstaltung\nVeranstalter: RVED\nhttp://wsge.de/veranst
+ altungen/
+URL:http://wsge.de/veranstaltungen/
+END:VEVENT
+END:VCALENDAR
