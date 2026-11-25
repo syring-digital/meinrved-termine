@@ -132,7 +132,7 @@ def parse_yardstick(h):
 
 
 def esc(s):
-    return s.replace('\\', '\\\\').replace(';', '\;').replace(',', '\\,').replace('\n', '\\n')
+    return s.replace('\\', '\\\\').replace(';', '\\;').replace(',', '\\,').replace('\n', '\\n')
 
 
 def fold(line):

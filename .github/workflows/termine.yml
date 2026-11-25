@@ -2,6 +2,7 @@
 # Läuft mehrmals täglich; fällt wsge.de aus, bleibt die zuletzt veröffentlichte Datei erhalten.
 # Veröffentlicht wird per Branch "gh-pages" (Pages-Quelle: Branch). Der frühere Weg über deploy-pages blieb am 04.11.2026
 # im Status "leer" hängen und hat Änderungen der Sperrliste nicht ausgeliefert.
+# Der Push wird bis zu dreimal versucht (am 25.11.2026 lehnte GitHub ihn einmal mit „fatal error in commit_refs_rules“ ab).
 name: Termine aktualisieren
 on:
   schedule:
@@ -34,4 +35,14 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add -A
           git commit -q -m "Veröffentlicht von ${GITHUB_SHA::7}"
-          git push -q --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
+          for versuch in 1 2 3; do
+            if git push -q --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" gh-pages; then
+              exit 0
+            fi
+            if [ "$versuch" -lt 3 ]; then
+              echo "::warning::Push auf gh-pages abgelehnt (Versuch $versuch), neuer Versuch in $((versuch * 45)) s"
+              sleep $((versuch * 45))
+            fi
+          done
+          echo "::error::Push auf gh-pages nach drei Versuchen gescheitert"
+          exit 1
