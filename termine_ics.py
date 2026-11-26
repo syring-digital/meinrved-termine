@@ -4,7 +4,7 @@ Schlägt der Abruf fehl oder findet der Parser auffällig wenig, bleibt die zule
 Aufruf: python termine_ics.py [Ausgabedatei]"""
 import os, re, sys, json, hashlib, datetime as dt, html as htmllib, urllib.request
 
-BASE = 'http://wsge.de'
+BASE = 'https://wsge.de'
 PUBLISHED = 'https://syring-digital.github.io/meinrved-termine/termine.ics'
 KIND_TITLE = {'rved': 'RVED-Veranstaltung', 'yardstick': 'Yardstick-Regatta (Ederseemeisterschaft)',
               'ranglisten': 'Ranglisten-Regatta', 'verein': 'Vereinstermin'}
